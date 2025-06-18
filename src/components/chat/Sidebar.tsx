@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Button } from '@/components/ui/button';
@@ -218,16 +217,20 @@ export const Sidebar = () => {
         )}
       </div>
 
-      {/* Enhanced Footer */}
+      {/* Enhanced Footer with Improved New Chat Button */}
       <div className="p-4 border-t border-slate-700 bg-gradient-to-r from-slate-800 to-slate-900">
         <Button 
           variant="outline" 
-          size="sm" 
-          className="w-full border-slate-600 hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-purple-600/20 text-slate-300 hover:text-white transition-all duration-300 hover:scale-105 hover:border-blue-500/50"
+          size="lg" 
+          className="w-full relative group overflow-hidden border-2 border-blue-500/50 bg-gradient-to-r from-blue-600/10 to-purple-600/10 hover:from-blue-600/20 hover:to-purple-600/20 text-white font-semibold transition-all duration-300 hover:scale-105 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/25"
           onClick={() => createNewChat(activeChatType)}
         >
-          <Plus className="w-4 h-4 mr-2" />
-          New Chat
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-500/20 to-purple-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <Plus className="w-5 h-5 mr-3 text-blue-400 group-hover:text-blue-300 transition-colors group-hover:rotate-90 duration-300" />
+          <span className="relative z-10 bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent group-hover:from-blue-200 group-hover:to-purple-200 transition-all duration-300">
+            New Chat
+          </span>
+          <div className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
         </Button>
       </div>
     </div>
