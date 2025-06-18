@@ -15,7 +15,6 @@ export interface ChatSession {
   title: string;
   type: ChatType;
   messages: Message[];
-  webhookUrl?: string; // Keep individual chat webhook for backward compatibility
 }
 
 export interface WebhookConfig {
@@ -34,7 +33,6 @@ interface ChatContextType {
   setCurrentChat: (chat: ChatSession | null) => void;
   createNewChat: (type: ChatType) => void;
   sendMessage: (text: string) => Promise<void>;
-  setWebhookUrl: (url: string) => void;
   setWebhookForType: (type: ChatType, url: string) => void;
   deleteChat: (chatId: string) => void;
   renameChat: (chatId: string, newTitle: string) => void;
@@ -105,8 +103,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       )
     );
 
-    // Determine which webhook to use: individual chat webhook or type-based webhook
-    const webhookUrl = currentChat.webhookUrl || webhookConfig[currentChat.type];
+    // Use type-based webhook
+    const webhookUrl = webhookConfig[currentChat.type];
     
     // Send to webhook if configured
     if (webhookUrl) {
@@ -150,18 +148,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }, 1000);
   };
 
-  const setWebhookUrl = (url: string) => {
-    if (!currentChat) return;
-    
-    const updatedChat = { ...currentChat, webhookUrl: url };
-    setCurrentChat(updatedChat);
-    setChatSessions(prev => 
-      prev.map(session => 
-        session.id === currentChat.id ? updatedChat : session
-      )
-    );
-  };
-
   const setWebhookForType = (type: ChatType, url: string) => {
     setWebhookConfig(prev => ({
       ...prev,
@@ -196,7 +182,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       setCurrentChat,
       createNewChat,
       sendMessage,
-      setWebhookUrl,
       setWebhookForType,
       deleteChat,
       renameChat,

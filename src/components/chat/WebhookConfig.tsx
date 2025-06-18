@@ -3,9 +3,8 @@ import React, { useState } from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Settings, Save, Globe, TrendingUp, ShoppingBag, PenTool, Calendar } from 'lucide-react';
+import { Save, Globe, TrendingUp, ShoppingBag, PenTool, Calendar } from 'lucide-react';
 import { ChatType } from '@/contexts/ChatContext';
 
 const chatTypeConfig = [
@@ -72,12 +71,9 @@ export const WebhookConfig = () => {
   };
 
   return (
-    <div className="space-y-6 max-h-96 overflow-y-auto">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Settings className="w-5 h-5 text-blue-400" />
-          <h3 className="font-medium text-white">Webhook Configuration</h3>
-        </div>
+        <h4 className="font-medium text-white">Chat Type Webhooks</h4>
         <Button 
           onClick={handleSaveAll}
           size="sm"
@@ -88,7 +84,7 @@ export const WebhookConfig = () => {
         </Button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 max-h-96 overflow-y-auto">
         {chatTypeConfig.map((config) => {
           const Icon = config.icon;
           return (
@@ -96,7 +92,7 @@ export const WebhookConfig = () => {
               <div className="flex items-center space-x-3 mb-3">
                 <Icon className="w-5 h-5 text-blue-400" />
                 <div>
-                  <h4 className="font-medium text-white">{config.name}</h4>
+                  <h5 className="font-medium text-white">{config.name}</h5>
                   <p className="text-xs text-slate-400">{config.description}</p>
                 </div>
               </div>
@@ -105,7 +101,7 @@ export const WebhookConfig = () => {
                 <Input
                   value={webhookInputs[config.id]}
                   onChange={(e) => handleInputChange(config.id, e.target.value)}
-                  placeholder={`https://your-automation-endpoint.com/${config.id}/webhook/...`}
+                  placeholder={`https://your-domain.com/webhook/${config.id}`}
                   className="flex-1 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
                 />
                 <Button 
@@ -116,16 +112,15 @@ export const WebhookConfig = () => {
                   <Save className="w-4 h-4" />
                 </Button>
               </div>
+              
+              {webhookInputs[config.id] && (
+                <p className="text-xs text-green-400 mt-2">
+                  ✓ Webhook configured for {config.name}
+                </p>
+              )}
             </div>
           );
         })}
-      </div>
-
-      <div className="text-xs text-slate-400 space-y-1 bg-slate-800/30 p-3 rounded-lg">
-        <p>• Each chat type can have its own automation endpoint</p>
-        <p>• Webhooks receive specialized data based on the chat type</p>
-        <p>• Individual chat webhooks (legacy) will override type-based webhooks</p>
-        <p>• Configure your automation workflows to receive chat data</p>
       </div>
     </div>
   );
