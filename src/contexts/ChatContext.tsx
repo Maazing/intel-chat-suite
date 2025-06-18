@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface Message {
@@ -17,7 +16,7 @@ export interface ChatSession {
 }
 
 export type ChatType = 
-  | 'basic-conversation'
+  | 'noa-hq'
   | 'performance-marketing'
   | 'shopify-management'
   | 'content-creation'
@@ -32,6 +31,8 @@ interface ChatContextType {
   setCurrentChat: (chat: ChatSession) => void;
   sendMessage: (content: string) => void;
   setWebhookUrl: (url: string) => void;
+  deleteChat: (chatId: string) => void;
+  renameChat: (chatId: string, newTitle: string) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -47,11 +48,11 @@ export const useChat = () => {
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [currentChat, setCurrentChat] = useState<ChatSession | null>(null);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
-  const [activeChatType, setActiveChatType] = useState<ChatType>('basic-conversation');
+  const [activeChatType, setActiveChatType] = useState<ChatType>('noa-hq');
 
   const createNewChat = (type: ChatType) => {
     const chatTypeNames = {
-      'basic-conversation': 'Basic Conversation',
+      'noa-hq': 'Noa HQ',
       'performance-marketing': 'Performance Marketing',
       'shopify-management': 'Shopify Management',
       'content-creation': 'Content Creation',
@@ -69,6 +70,27 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     setChatSessions(prev => [...prev, newChat]);
     setCurrentChat(newChat);
     setActiveChatType(type);
+  };
+
+  const deleteChat = (chatId: string) => {
+    setChatSessions(prev => prev.filter(chat => chat.id !== chatId));
+    if (currentChat?.id === chatId) {
+      setCurrentChat(null);
+    }
+  };
+
+  const renameChat = (chatId: string, newTitle: string) => {
+    setChatSessions(prev => 
+      prev.map(chat => 
+        chat.id === chatId 
+          ? { ...chat, title: newTitle }
+          : chat
+      )
+    );
+    
+    if (currentChat?.id === chatId) {
+      setCurrentChat(prev => prev ? { ...prev, title: newTitle } : null);
+    }
   };
 
   const sendMessage = async (content: string) => {
@@ -157,7 +179,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       createNewChat,
       setCurrentChat,
       sendMessage,
-      setWebhookUrl
+      setWebhookUrl,
+      deleteChat,
+      renameChat
     }}>
       {children}
     </ChatContext.Provider>

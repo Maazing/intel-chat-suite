@@ -40,7 +40,7 @@ export const ChatInterface = () => {
     return (
       <div className="flex-1 flex items-center justify-center bg-gray-900">
         <div className="text-center max-w-md">
-          <h2 className="text-2xl font-semibold mb-4">Welcome to ChatGPT Pro</h2>
+          <h2 className="text-2xl font-semibold mb-4">Welcome to Noa</h2>
           <p className="text-gray-400 mb-6">
             Select a chat type from the sidebar to get started with your AI assistant.
           </p>
@@ -63,14 +63,25 @@ export const ChatInterface = () => {
     );
   }
 
+  const getDisplayName = (type: string) => {
+    const typeMap: { [key: string]: string } = {
+      'noa-hq': 'Noa HQ',
+      'performance-marketing': 'Performance Marketing',
+      'shopify-management': 'Shopify Management',
+      'content-creation': 'Content Creation',
+      'calendar-support': 'Calendar Support'
+    };
+    return typeMap[type] || type;
+  };
+
   return (
     <div className="flex-1 flex flex-col bg-gray-900">
       {/* Header */}
       <div className="border-b border-gray-800 p-4 flex items-center justify-between">
         <div>
           <h2 className="font-semibold">{currentChat.title}</h2>
-          <p className="text-sm text-gray-400 capitalize">
-            {currentChat.type.replace('-', ' ')} Mode
+          <p className="text-sm text-gray-400">
+            {getDisplayName(currentChat.type)} Mode
           </p>
         </div>
         <Button
@@ -111,13 +122,13 @@ export const ChatInterface = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={`Message ${currentChat.type.replace('-', ' ')} assistant...`}
+            placeholder={`Message ${getDisplayName(currentChat.type)} assistant...`}
             className="flex-1 bg-gray-800 border-gray-700 focus:border-blue-500"
           />
           <Button 
             onClick={handleSend}
             disabled={!inputValue.trim()}
-            className="px-3"
+            className="px-3 bg-blue-600 hover:bg-blue-700"
           >
             <Send className="w-4 h-4" />
           </Button>
