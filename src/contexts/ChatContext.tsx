@@ -42,6 +42,8 @@ interface ChatContextType {
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
+  console.log('ChatProvider rendering');
+  
   const [currentChat, setCurrentChat] = useState<ChatSession | null>(null);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeChatType, setActiveChatType] = useState<ChatType>('noa-hq');
@@ -213,29 +215,37 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const contextValue: ChatContextType = {
+    currentChat,
+    chatSessions,
+    activeChatType,
+    webhookConfig,
+    isWaitingForResponse,
+    setCurrentChat,
+    createNewChat,
+    sendMessage,
+    setWebhookForType,
+    deleteChat,
+    renameChat,
+    goToHomepage,
+  };
+
+  console.log('ChatProvider context value:', contextValue);
+
   return (
-    <ChatContext.Provider value={{
-      currentChat,
-      chatSessions,
-      activeChatType,
-      webhookConfig,
-      isWaitingForResponse,
-      setCurrentChat,
-      createNewChat,
-      sendMessage,
-      setWebhookForType,
-      deleteChat,
-      renameChat,
-      goToHomepage,
-    }}>
+    <ChatContext.Provider value={contextValue}>
       {children}
     </ChatContext.Provider>
   );
 };
 
 export const useChat = () => {
+  console.log('useChat called');
   const context = useContext(ChatContext);
+  console.log('useChat context:', context);
+  
   if (context === undefined) {
+    console.error('useChat must be used within a ChatProvider');
     throw new Error('useChat must be used within a ChatProvider');
   }
   return context;

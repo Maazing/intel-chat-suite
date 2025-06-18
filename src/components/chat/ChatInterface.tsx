@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,12 @@ import { WebhookSettings } from './WebhookSettings';
 import { Send, Settings, Zap, Target, ShoppingCart, PenTool, Calendar, Sparkles, ArrowRight } from 'lucide-react';
 
 export const ChatInterface = () => {
-  const { currentChat, sendMessage, createNewChat, isWaitingForResponse } = useChat();
+  console.log('ChatInterface rendering');
+  
+  const chatContext = useChat();
+  console.log('ChatInterface got chat context:', chatContext);
+  
+  const { currentChat, sendMessage, createNewChat, isWaitingForResponse } = chatContext;
   const [inputValue, setInputValue] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
