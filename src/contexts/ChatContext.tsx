@@ -29,7 +29,6 @@ interface ChatContextType {
   chatSessions: ChatSession[];
   activeChatType: ChatType;
   webhookConfig: WebhookConfig;
-  isWaitingForResponse: boolean;
   setCurrentChat: (chat: ChatSession | null) => void;
   createNewChat: (type: ChatType) => void;
   sendMessage: (text: string) => Promise<void>;
@@ -42,12 +41,9 @@ interface ChatContextType {
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
-  console.log('ChatProvider rendering');
-  
   const [currentChat, setCurrentChat] = useState<ChatSession | null>(null);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeChatType, setActiveChatType] = useState<ChatType>('noa-hq');
-  const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
   const [webhookConfig, setWebhookConfig] = useState<WebhookConfig>({
     'noa-hq': '',
     'performance-marketing': '',
@@ -105,9 +101,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         session.id === currentChat.id ? updatedChatWithUserMessage : session
       )
     );
-
-    // Set waiting state to show typing indicator
-    setIsWaitingForResponse(true);
 
     // Use type-based webhook
     const webhookUrl = webhookConfig[currentChat.type];
@@ -185,9 +178,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         setCurrentChat(chatWithNoWebhook);
         setChatSessions(prev => prev.map(session => session.id === currentChat.id ? chatWithNoWebhook : session));
     }
-
-    // Clear waiting state after response is processed
-    setIsWaitingForResponse(false);
   };
 
   const setWebhookForType = (type: ChatType, url: string) => {
@@ -215,37 +205,28 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const contextValue: ChatContextType = {
-    currentChat,
-    chatSessions,
-    activeChatType,
-    webhookConfig,
-    isWaitingForResponse,
-    setCurrentChat,
-    createNewChat,
-    sendMessage,
-    setWebhookForType,
-    deleteChat,
-    renameChat,
-    goToHomepage,
-  };
-
-  console.log('ChatProvider context value:', contextValue);
-
   return (
-    <ChatContext.Provider value={contextValue}>
+    <ChatContext.Provider value={{
+      currentChat,
+      chatSessions,
+      activeChatType,
+      webhookConfig,
+      setCurrentChat,
+      createNewChat,
+      sendMessage,
+      setWebhookForType,
+      deleteChat,
+      renameChat,
+      goToHomepage,
+    }}>
       {children}
     </ChatContext.Provider>
   );
 };
 
 export const useChat = () => {
-  console.log('useChat called');
   const context = useContext(ChatContext);
-  console.log('useChat context:', context);
-  
   if (context === undefined) {
-    console.error('useChat must be used within a ChatProvider');
     throw new Error('useChat must be used within a ChatProvider');
   }
   return context;

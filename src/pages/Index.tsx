@@ -1,13 +1,13 @@
 
-import React from 'react';
-import { ChatProvider } from '@/contexts/ChatContext';
+import React, { useState } from 'react';
 import { Sidebar } from '@/components/chat/Sidebar';
 import { ChatInterface } from '@/components/chat/ChatInterface';
+import { ChatProvider } from '@/contexts/ChatContext';
 
 const Index = () => {
   return (
     <ChatProvider>
-      <div className="h-screen flex bg-slate-900">
+      <div className="flex h-screen bg-gray-900 text-white">
         <Sidebar />
         <ChatInterface />
       </div>

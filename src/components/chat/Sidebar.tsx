@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Button } from '@/components/ui/button';
@@ -43,12 +45,7 @@ const chatTypes = [
 ];
 
 export const Sidebar = () => {
-  console.log('Sidebar rendering');
-  
-  const chatContext = useChat();
-  console.log('Sidebar got chat context:', chatContext);
-  
-  const { activeChatType, createNewChat, chatSessions, setCurrentChat, currentChat, deleteChat, renameChat, goToHomepage } = chatContext;
+  const { activeChatType, createNewChat, chatSessions, setCurrentChat, currentChat, deleteChat, renameChat, goToHomepage } = useChat();
   const [isChatTypesCollapsed, setIsChatTypesCollapsed] = useState(false);
   const [isRecentChatsCollapsed, setIsRecentChatsCollapsed] = useState(false);
 
@@ -236,3 +233,4 @@ export const Sidebar = () => {
     </div>
   );
 };
+
