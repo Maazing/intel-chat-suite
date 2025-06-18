@@ -15,17 +15,27 @@ export interface ChatSession {
   title: string;
   type: ChatType;
   messages: Message[];
-  webhookUrl?: string;
+  webhookUrl?: string; // Keep individual chat webhook for backward compatibility
+}
+
+export interface WebhookConfig {
+  'noa-hq': string;
+  'performance-marketing': string;
+  'shopify-management': string;
+  'content-creation': string;
+  'calendar-support': string;
 }
 
 interface ChatContextType {
   currentChat: ChatSession | null;
   chatSessions: ChatSession[];
   activeChatType: ChatType;
+  webhookConfig: WebhookConfig;
   setCurrentChat: (chat: ChatSession | null) => void;
   createNewChat: (type: ChatType) => void;
   sendMessage: (text: string) => Promise<void>;
   setWebhookUrl: (url: string) => void;
+  setWebhookForType: (type: ChatType, url: string) => void;
   deleteChat: (chatId: string) => void;
   renameChat: (chatId: string, newTitle: string) => void;
   goToHomepage: () => void;
@@ -37,6 +47,13 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [currentChat, setCurrentChat] = useState<ChatSession | null>(null);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeChatType, setActiveChatType] = useState<ChatType>('noa-hq');
+  const [webhookConfig, setWebhookConfig] = useState<WebhookConfig>({
+    'noa-hq': '',
+    'performance-marketing': '',
+    'shopify-management': '',
+    'content-creation': '',
+    'calendar-support': ''
+  });
 
   const createNewChat = (type: ChatType) => {
     const newChat: ChatSession = {
@@ -88,10 +105,13 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       )
     );
 
+    // Determine which webhook to use: individual chat webhook or type-based webhook
+    const webhookUrl = currentChat.webhookUrl || webhookConfig[currentChat.type];
+    
     // Send to webhook if configured
-    if (currentChat.webhookUrl) {
+    if (webhookUrl) {
       try {
-        await fetch(currentChat.webhookUrl, {
+        await fetch(webhookUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -142,6 +162,13 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  const setWebhookForType = (type: ChatType, url: string) => {
+    setWebhookConfig(prev => ({
+      ...prev,
+      [type]: url
+    }));
+  };
+
   const deleteChat = (chatId: string) => {
     setChatSessions(prev => prev.filter(session => session.id !== chatId));
     if (currentChat?.id === chatId) {
@@ -165,10 +192,12 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       currentChat,
       chatSessions,
       activeChatType,
+      webhookConfig,
       setCurrentChat,
       createNewChat,
       sendMessage,
       setWebhookUrl,
+      setWebhookForType,
       deleteChat,
       renameChat,
       goToHomepage,
