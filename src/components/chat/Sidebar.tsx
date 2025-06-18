@@ -2,7 +2,7 @@
 import React from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Button } from '@/components/ui/button';
-import { Plus, MessageSquare, TrendingUp, ShoppingBag, PenTool, Calendar, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { Plus, MessageSquare, TrendingUp, ShoppingBag, PenTool, Calendar, MoreHorizontal, Edit, Trash2, Home } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,7 +44,7 @@ const chatTypes = [
 ];
 
 export const Sidebar = () => {
-  const { activeChatType, createNewChat, chatSessions, setCurrentChat, currentChat, deleteChat, renameChat } = useChat();
+  const { activeChatType, createNewChat, chatSessions, setCurrentChat, currentChat, deleteChat, renameChat, goToHomepage } = useChat();
 
   const handleRenameChat = (chatId: string) => {
     const newTitle = prompt('Enter new chat name:');
@@ -60,15 +60,22 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="w-80 bg-gray-950 border-r border-gray-800 flex flex-col">
+    <div className="w-80 bg-slate-900 border-r border-slate-700 flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-gray-800">
-        <h1 className="text-xl font-semibold text-center">Noa</h1>
+      <div className="p-4 border-b border-slate-700 bg-slate-800/50">
+        <Button
+          variant="ghost"
+          className="w-full justify-center hover:bg-slate-700 text-white"
+          onClick={goToHomepage}
+        >
+          <Home className="w-5 h-5 mr-2" />
+          <h1 className="text-xl font-semibold">Noa</h1>
+        </Button>
       </div>
 
       {/* Chat Types */}
       <div className="p-4 space-y-2">
-        <h2 className="text-sm font-medium text-gray-400 mb-3">Chat Types</h2>
+        <h2 className="text-sm font-medium text-slate-400 mb-3">Chat Types</h2>
         {chatTypes.map((type) => {
           const Icon = type.icon;
           const isActive = activeChatType === type.id;
@@ -77,7 +84,7 @@ export const Sidebar = () => {
               key={type.id}
               variant={isActive ? "default" : "ghost"}
               className={`w-full justify-start text-left h-auto p-3 group ${
-                isActive ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'hover:bg-gray-800'
+                isActive ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'hover:bg-slate-800 text-slate-300'
               }`}
               onClick={() => createNewChat(type.id)}
             >
@@ -86,7 +93,7 @@ export const Sidebar = () => {
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm">{type.name}</div>
                   <div className={`text-xs ${
-                    isActive ? 'text-blue-100' : 'text-gray-400 group-hover:text-gray-300'
+                    isActive ? 'text-blue-100' : 'text-slate-400 group-hover:text-slate-300'
                   }`}>
                     {type.description}
                   </div>
@@ -99,14 +106,14 @@ export const Sidebar = () => {
 
       {/* Chat History */}
       <div className="flex-1 p-4 overflow-y-auto">
-        <h2 className="text-sm font-medium text-gray-400 mb-3">Recent Chats</h2>
+        <h2 className="text-sm font-medium text-slate-400 mb-3">Recent Chats</h2>
         <div className="space-y-1">
           {chatSessions.map((session) => (
             <div key={session.id} className="flex items-center group">
               <Button
                 variant={currentChat?.id === session.id ? "default" : "ghost"}
                 className={`flex-1 justify-start text-left h-auto p-2 mr-1 ${
-                  currentChat?.id === session.id ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'hover:bg-gray-800'
+                  currentChat?.id === session.id ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'hover:bg-slate-800 text-slate-300'
                 }`}
                 onClick={() => setCurrentChat(session)}
               >
@@ -118,22 +125,22 @@ export const Sidebar = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-8 w-8"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700"
                   >
                     <MoreHorizontal className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+                <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700">
                   <DropdownMenuItem 
                     onClick={() => handleRenameChat(session.id)}
-                    className="hover:bg-gray-700 cursor-pointer"
+                    className="hover:bg-slate-700 cursor-pointer text-slate-300"
                   >
                     <Edit className="w-4 h-4 mr-2" />
                     Rename
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => handleDeleteChat(session.id)}
-                    className="hover:bg-gray-700 cursor-pointer text-red-400 hover:text-red-300"
+                    className="hover:bg-slate-700 cursor-pointer text-red-400 hover:text-red-300"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
                     Delete
@@ -146,11 +153,11 @@ export const Sidebar = () => {
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-800">
+      <div className="p-4 border-t border-slate-700 bg-slate-800/50">
         <Button 
           variant="outline" 
           size="sm" 
-          className="w-full border-gray-700 hover:bg-gray-800"
+          className="w-full border-slate-600 hover:bg-slate-700 text-slate-300 hover:text-white"
           onClick={() => createNewChat(activeChatType)}
         >
           <Plus className="w-4 h-4 mr-2" />
