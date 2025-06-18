@@ -90,25 +90,25 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       timestamp: new Date(),
     };
 
-    // Update current chat with user message
-    const updatedChat = {
+    // Immediately update the UI with the user's message
+    const updatedChatWithUserMessage = {
       ...currentChat,
       messages: [...currentChat.messages, userMessage],
     };
-    setCurrentChat(updatedChat);
-    setChatSessions(prev => 
-      prev.map(session => 
-        session.id === currentChat.id ? updatedChat : session
+    setCurrentChat(updatedChatWithUserMessage);
+    setChatSessions(prev =>
+      prev.map(session =>
+        session.id === currentChat.id ? updatedChatWithUserMessage : session
       )
     );
 
     // Use type-based webhook
     const webhookUrl = webhookConfig[currentChat.type];
     
-    // Send to webhook if configured
+    // Send to webhook if configured and process the response
     if (webhookUrl) {
       try {
-        await fetch(webhookUrl, {
+        const response = await fetch(webhookUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -120,31 +120,64 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
             timestamp: new Date().toISOString(),
           }),
         });
+
+        if (!response.ok) {
+          throw new Error(`Webhook responded with status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+
+        // Create the assistant's message from the REAL webhook response
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          text: responseData.reply, // This looks for the "reply" field we set up in n8n
+          sender: 'assistant',
+          timestamp: new Date(),
+        };
+
+        // Update the UI with the assistant's real message
+        const finalChat = {
+          ...updatedChatWithUserMessage,
+          messages: [...updatedChatWithUserMessage.messages, assistantMessage],
+        };
+        setCurrentChat(finalChat);
+        setChatSessions(prev =>
+          prev.map(session =>
+            session.id === currentChat.id ? finalChat : session
+          )
+        );
+
       } catch (error) {
-        console.error('Failed to send message to webhook:', error);
+        console.error('Failed to send message to webhook or process response:', error);
+        // Add an error message to the chat UI if the connection fails
+        const errorMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            text: "Sorry, I encountered an error connecting to the automation service.",
+            sender: 'assistant',
+            timestamp: new Date()
+        };
+        const chatWithError = {
+            ...updatedChatWithUserMessage,
+            messages: [...updatedChatWithUserMessage.messages, errorMessage]
+        };
+        setCurrentChat(chatWithError);
+        setChatSessions(prev => prev.map(session => session.id === currentChat.id ? chatWithError : session));
       }
+    } else {
+        // Optional: Handle cases where no webhook is configured for the chat type
+        const noWebhookMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            text: "This chat type does not have an automation service configured.",
+            sender: 'assistant',
+            timestamp: new Date()
+        };
+        const chatWithNoWebhook = {
+            ...updatedChatWithUserMessage,
+            messages: [...updatedChatWithUserMessage.messages, noWebhookMessage]
+        };
+        setCurrentChat(chatWithNoWebhook);
+        setChatSessions(prev => prev.map(session => session.id === currentChat.id ? chatWithNoWebhook : session));
     }
-
-    // Simulate AI response
-    // setTimeout(() => {
-    //   const assistantMessage: Message = {
-    //     id: (Date.now() + 1).toString(),
-    //     text: `Thank you for your message. As your ${getTypeDisplayName(currentChat.type)} assistant, I'm here to help you with your e-commerce business needs. How can I assist you today?`,
-    //     sender: 'assistant',
-    //     timestamp: new Date(),
-    //   };
-
-    //   const finalChat = {
-    //     ...updatedChat,
-    //     messages: [...updatedChat.messages, assistantMessage],
-    //   };
-    //   setCurrentChat(finalChat);
-    //   setChatSessions(prev => 
-    //     prev.map(session => 
-    //       session.id === currentChat.id ? finalChat : session
-    //     )
-    //   );
-    // }, 1000);
   };
 
   const setWebhookForType = (type: ChatType, url: string) => {
