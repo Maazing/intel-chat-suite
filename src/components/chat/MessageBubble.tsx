@@ -27,7 +27,7 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
             : 'bg-gray-800 text-gray-100'
         }`}>
           <p className="text-sm leading-relaxed whitespace-pre-wrap">
-            {message.content}
+            {message.text}
           </p>
           <div className={`text-xs mt-1 ${
             isUser ? 'text-blue-100' : 'text-gray-400'
