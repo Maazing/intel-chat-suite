@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export type ChatType = 'noa-hq' | 'performance-marketing' | 'shopify-management' | 'content-creation' | 'calendar-support';
@@ -127,25 +126,25 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Simulate AI response
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: `Thank you for your message. As your ${getTypeDisplayName(currentChat.type)} assistant, I'm here to help you with your e-commerce business needs. How can I assist you today?`,
-        sender: 'assistant',
-        timestamp: new Date(),
-      };
+    // setTimeout(() => {
+    //   const assistantMessage: Message = {
+    //     id: (Date.now() + 1).toString(),
+    //     text: `Thank you for your message. As your ${getTypeDisplayName(currentChat.type)} assistant, I'm here to help you with your e-commerce business needs. How can I assist you today?`,
+    //     sender: 'assistant',
+    //     timestamp: new Date(),
+    //   };
 
-      const finalChat = {
-        ...updatedChat,
-        messages: [...updatedChat.messages, assistantMessage],
-      };
-      setCurrentChat(finalChat);
-      setChatSessions(prev => 
-        prev.map(session => 
-          session.id === currentChat.id ? finalChat : session
-        )
-      );
-    }, 1000);
+    //   const finalChat = {
+    //     ...updatedChat,
+    //     messages: [...updatedChat.messages, assistantMessage],
+    //   };
+    //   setCurrentChat(finalChat);
+    //   setChatSessions(prev => 
+    //     prev.map(session => 
+    //       session.id === currentChat.id ? finalChat : session
+    //     )
+    //   );
+    // }, 1000);
   };
 
   const setWebhookForType = (type: ChatType, url: string) => {
