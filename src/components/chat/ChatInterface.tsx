@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MessageBubble } from './MessageBubble';
 import { WebhookSettings } from './WebhookSettings';
-import { Send, Settings, Zap, Target, ShoppingCart, PenTool, Calendar, Sparkles } from 'lucide-react';
+import { Send, Settings, Zap, Target, ShoppingCart, PenTool, Calendar, Sparkles, ArrowRight } from 'lucide-react';
 
 export const ChatInterface = () => {
-  const { currentChat, sendMessage } = useChat();
+  const { currentChat, sendMessage, createNewChat } = useChat();
   const [inputValue, setInputValue] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -36,97 +36,136 @@ export const ChatInterface = () => {
     }
   };
 
+  const handleFeatureClick = (chatType: 'noa-hq' | 'performance-marketing' | 'shopify-management' | 'content-creation' | 'calendar-support') => {
+    createNewChat(chatType);
+  };
+
   if (!currentChat) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-        {/* Animated background elements with matching color scheme */}
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+        {/* Animated background elements */}
         <div className="absolute inset-0">
           <div className="absolute top-10 left-10 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-10 right-10 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl animate-pulse delay-500"></div>
         </div>
 
-        <div className="text-center max-w-6xl px-8 relative z-10 w-full">
-          {/* Main heading with gradient */}
-          <div className="mb-12">
-            <h1 className="text-7xl font-bold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent mb-6">
-              Welcome to Noa
-            </h1>
-            <div className="flex items-center justify-center mb-8">
-              <Sparkles className="w-8 h-8 text-yellow-400 mr-3 animate-pulse" />
-              <p className="text-2xl text-slate-300 font-medium">
-                Your AI-Powered E-commerce Growth Partner
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="min-h-full flex items-center justify-center px-8 py-16">
+            <div className="text-center max-w-6xl w-full relative z-10">
+              {/* Main heading with gradient */}
+              <div className="mb-12">
+                <h1 className="text-7xl font-bold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent mb-6">
+                  Welcome to Noa
+                </h1>
+                <div className="flex items-center justify-center mb-8">
+                  <Sparkles className="w-8 h-8 text-yellow-400 mr-3 animate-pulse" />
+                  <p className="text-2xl text-slate-300 font-medium">
+                    Your AI-Powered E-commerce Growth Partner
+                  </p>
+                  <Sparkles className="w-8 h-8 text-yellow-400 ml-3 animate-pulse" />
+                </div>
+              </div>
+
+              {/* Description */}
+              <p className="text-xl text-slate-400 mb-16 max-w-3xl mx-auto leading-relaxed">
+                Supercharge your e-commerce business with specialized AI assistants designed for modern brand owners. 
+                Get expert guidance across every aspect of your online business.
               </p>
-              <Sparkles className="w-8 h-8 text-yellow-400 ml-3 animate-pulse" />
-            </div>
-          </div>
 
-          {/* Description */}
-          <p className="text-xl text-slate-400 mb-16 max-w-3xl mx-auto leading-relaxed">
-            Supercharge your e-commerce business with specialized AI assistants designed for modern brand owners. 
-            Get expert guidance across every aspect of your online business.
-          </p>
+              {/* Interactive feature cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-16 max-w-7xl mx-auto">
+                <button
+                  onClick={() => handleFeatureClick('noa-hq')}
+                  className="group bg-slate-800/60 backdrop-blur-lg rounded-2xl p-8 border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/20 text-left"
+                >
+                  <div className="w-16 h-16 bg-blue-600/30 rounded-xl flex items-center justify-center mb-6 mx-auto group-hover:bg-blue-600/50 transition-colors">
+                    <Zap className="w-8 h-8 text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-4">Strategic Guidance</h3>
+                  <p className="text-slate-400 leading-relaxed mb-4">Get personalized business insights and strategic direction for your brand</p>
+                  <div className="flex items-center text-blue-400 font-medium group-hover:text-blue-300">
+                    Start Chat <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </button>
 
-          {/* Feature cards - Updated layout for better visibility */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-16 max-w-7xl mx-auto">
-            <div className="bg-slate-800/60 backdrop-blur-lg rounded-2xl p-8 border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/20">
-              <div className="w-16 h-16 bg-blue-600/30 rounded-xl flex items-center justify-center mb-6 mx-auto">
-                <Zap className="w-8 h-8 text-blue-400" />
+                <button
+                  onClick={() => handleFeatureClick('performance-marketing')}
+                  className="group bg-slate-800/60 backdrop-blur-lg rounded-2xl p-8 border border-slate-700/50 hover:border-green-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-green-500/20 text-left"
+                >
+                  <div className="w-16 h-16 bg-green-600/30 rounded-xl flex items-center justify-center mb-6 mx-auto group-hover:bg-green-600/50 transition-colors">
+                    <Target className="w-8 h-8 text-green-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-4">Performance Marketing</h3>
+                  <p className="text-slate-400 leading-relaxed mb-4">Optimize campaigns and maximize your advertising ROI across all channels</p>
+                  <div className="flex items-center text-green-400 font-medium group-hover:text-green-300">
+                    Start Chat <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleFeatureClick('shopify-management')}
+                  className="group bg-slate-800/60 backdrop-blur-lg rounded-2xl p-8 border border-slate-700/50 hover:border-purple-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20 text-left"
+                >
+                  <div className="w-16 h-16 bg-purple-600/30 rounded-xl flex items-center justify-center mb-6 mx-auto group-hover:bg-purple-600/50 transition-colors">
+                    <ShoppingCart className="w-8 h-8 text-purple-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-4">Store Management</h3>
+                  <p className="text-slate-400 leading-relaxed mb-4">Streamline your Shopify operations and enhance customer experience</p>
+                  <div className="flex items-center text-purple-400 font-medium group-hover:text-purple-300">
+                    Start Chat <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleFeatureClick('content-creation')}
+                  className="group bg-slate-800/60 backdrop-blur-lg rounded-2xl p-8 border border-slate-700/50 hover:border-cyan-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/20 text-left"
+                >
+                  <div className="w-16 h-16 bg-cyan-600/30 rounded-xl flex items-center justify-center mb-6 mx-auto group-hover:bg-cyan-600/50 transition-colors">
+                    <PenTool className="w-8 h-8 text-cyan-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-4">Content Creation</h3>
+                  <p className="text-slate-400 leading-relaxed mb-4">Craft compelling content that converts visitors into loyal customers</p>
+                  <div className="flex items-center text-cyan-400 font-medium group-hover:text-cyan-300">
+                    Start Chat <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleFeatureClick('calendar-support')}
+                  className="group bg-slate-800/60 backdrop-blur-lg rounded-2xl p-8 border border-slate-700/50 hover:border-yellow-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/20 text-left"
+                >
+                  <div className="w-16 h-16 bg-yellow-600/30 rounded-xl flex items-center justify-center mb-6 mx-auto group-hover:bg-yellow-600/50 transition-colors">
+                    <Calendar className="w-8 h-8 text-yellow-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-4">Calendar Support</h3>
+                  <p className="text-slate-400 leading-relaxed mb-4">Organize your schedule and never miss important business opportunities</p>
+                  <div className="flex items-center text-yellow-400 font-medium group-hover:text-yellow-300">
+                    Start Chat <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </button>
+
+                <div className="bg-gradient-to-br from-blue-600/30 to-purple-600/30 backdrop-blur-lg rounded-2xl p-8 border border-blue-500/50 hover:border-blue-400 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
+                  <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-6 mx-auto">
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-4">AI-Powered Intelligence</h3>
+                  <p className="text-slate-300 leading-relaxed">Advanced automation and insights to scale your business efficiently</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-4">Strategic Guidance</h3>
-              <p className="text-slate-400 leading-relaxed">Get personalized business insights and strategic direction for your brand</p>
-            </div>
 
-            <div className="bg-slate-800/60 backdrop-blur-lg rounded-2xl p-8 border border-slate-700/50 hover:border-green-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-green-500/20">
-              <div className="w-16 h-16 bg-green-600/30 rounded-xl flex items-center justify-center mb-6 mx-auto">
-                <Target className="w-8 h-8 text-green-400" />
+              {/* CTA */}
+              <div className="text-center">
+                <div className="inline-flex items-center space-x-3 text-slate-400 mb-6">
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-lg">Ready to transform your e-commerce business</span>
+                </div>
+                <p className="text-slate-500 text-lg">
+                  Click on any feature above to start your specialized conversation
+                </p>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-4">Performance Marketing</h3>
-              <p className="text-slate-400 leading-relaxed">Optimize campaigns and maximize your advertising ROI across all channels</p>
             </div>
-
-            <div className="bg-slate-800/60 backdrop-blur-lg rounded-2xl p-8 border border-slate-700/50 hover:border-purple-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
-              <div className="w-16 h-16 bg-purple-600/30 rounded-xl flex items-center justify-center mb-6 mx-auto">
-                <ShoppingCart className="w-8 h-8 text-purple-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-4">Store Management</h3>
-              <p className="text-slate-400 leading-relaxed">Streamline your Shopify operations and enhance customer experience</p>
-            </div>
-
-            <div className="bg-slate-800/60 backdrop-blur-lg rounded-2xl p-8 border border-slate-700/50 hover:border-cyan-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/20">
-              <div className="w-16 h-16 bg-cyan-600/30 rounded-xl flex items-center justify-center mb-6 mx-auto">
-                <PenTool className="w-8 h-8 text-cyan-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-4">Content Creation</h3>
-              <p className="text-slate-400 leading-relaxed">Craft compelling content that converts visitors into loyal customers</p>
-            </div>
-
-            <div className="bg-slate-800/60 backdrop-blur-lg rounded-2xl p-8 border border-slate-700/50 hover:border-yellow-500/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/20">
-              <div className="w-16 h-16 bg-yellow-600/30 rounded-xl flex items-center justify-center mb-6 mx-auto">
-                <Calendar className="w-8 h-8 text-yellow-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-4">Calendar Support</h3>
-              <p className="text-slate-400 leading-relaxed">Organize your schedule and never miss important business opportunities</p>
-            </div>
-
-            <div className="bg-gradient-to-br from-blue-600/30 to-purple-600/30 backdrop-blur-lg rounded-2xl p-8 border border-blue-500/50 hover:border-blue-400 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30">
-              <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-6 mx-auto">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-4">AI-Powered Intelligence</h3>
-              <p className="text-slate-300 leading-relaxed">Advanced automation and insights to scale your business efficiently</p>
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div className="text-center">
-            <div className="inline-flex items-center space-x-3 text-slate-400 mb-6">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-lg">Ready to transform your e-commerce business</span>
-            </div>
-            <p className="text-slate-500 text-lg">
-              Select a specialized assistant from the sidebar to begin your journey
-            </p>
           </div>
         </div>
       </div>

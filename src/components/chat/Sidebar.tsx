@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Button } from '@/components/ui/button';
-import { Plus, MessageSquare, TrendingUp, ShoppingBag, PenTool, Calendar, MoreHorizontal, Edit, Trash2, Home } from 'lucide-react';
+import { Plus, MessageSquare, TrendingUp, ShoppingBag, PenTool, Calendar, MoreHorizontal, Edit, Trash2, Home, ChevronDown, ChevronRight } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,6 +45,7 @@ const chatTypes = [
 
 export const Sidebar = () => {
   const { activeChatType, createNewChat, chatSessions, setCurrentChat, currentChat, deleteChat, renameChat, goToHomepage } = useChat();
+  const [isChatTypesCollapsed, setIsChatTypesCollapsed] = useState(false);
 
   const handleRenameChat = (chatId: string) => {
     const newTitle = prompt('Enter new chat name:');
@@ -73,35 +74,51 @@ export const Sidebar = () => {
         </Button>
       </div>
 
-      {/* Chat Types */}
+      {/* Collapsible Chat Types */}
       <div className="p-4 space-y-2">
-        <h2 className="text-sm font-medium text-slate-400 mb-3">Chat Types</h2>
-        {chatTypes.map((type) => {
-          const Icon = type.icon;
-          const isActive = activeChatType === type.id;
-          return (
-            <Button
-              key={type.id}
-              variant={isActive ? "default" : "ghost"}
-              className={`w-full justify-start text-left h-auto p-3 group ${
-                isActive ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'hover:bg-slate-800 text-slate-300'
-              }`}
-              onClick={() => createNewChat(type.id)}
-            >
-              <div className="flex items-start space-x-3">
-                <Icon className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm">{type.name}</div>
-                  <div className={`text-xs ${
-                    isActive ? 'text-blue-100' : 'text-slate-400 group-hover:text-slate-300'
-                  }`}>
-                    {type.description}
+        <Button
+          variant="ghost"
+          onClick={() => setIsChatTypesCollapsed(!isChatTypesCollapsed)}
+          className="w-full justify-between text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800"
+        >
+          <span>Chat Types</span>
+          {isChatTypesCollapsed ? (
+            <ChevronRight className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
+        </Button>
+        
+        {!isChatTypesCollapsed && (
+          <div className="space-y-2">
+            {chatTypes.map((type) => {
+              const Icon = type.icon;
+              const isActive = activeChatType === type.id;
+              return (
+                <Button
+                  key={type.id}
+                  variant={isActive ? "default" : "ghost"}
+                  className={`w-full justify-start text-left h-auto p-3 group ${
+                    isActive ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'hover:bg-slate-800 text-slate-300'
+                  }`}
+                  onClick={() => createNewChat(type.id)}
+                >
+                  <div className="flex items-start space-x-3">
+                    <Icon className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm">{type.name}</div>
+                      <div className={`text-xs ${
+                        isActive ? 'text-blue-100' : 'text-slate-400 group-hover:text-slate-300'
+                      }`}>
+                        {type.description}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </Button>
-          );
-        })}
+                </Button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Chat History */}
