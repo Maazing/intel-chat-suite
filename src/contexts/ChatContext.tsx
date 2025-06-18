@@ -29,6 +29,7 @@ interface ChatContextType {
   chatSessions: ChatSession[];
   activeChatType: ChatType;
   webhookConfig: WebhookConfig;
+  isWaitingForResponse: boolean;
   setCurrentChat: (chat: ChatSession | null) => void;
   createNewChat: (type: ChatType) => void;
   sendMessage: (text: string) => Promise<void>;
@@ -44,6 +45,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [currentChat, setCurrentChat] = useState<ChatSession | null>(null);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeChatType, setActiveChatType] = useState<ChatType>('noa-hq');
+  const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
   const [webhookConfig, setWebhookConfig] = useState<WebhookConfig>({
     'noa-hq': '',
     'performance-marketing': '',
@@ -101,6 +103,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         session.id === currentChat.id ? updatedChatWithUserMessage : session
       )
     );
+
+    // Set waiting state to show typing indicator
+    setIsWaitingForResponse(true);
 
     // Use type-based webhook
     const webhookUrl = webhookConfig[currentChat.type];
@@ -178,6 +183,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         setCurrentChat(chatWithNoWebhook);
         setChatSessions(prev => prev.map(session => session.id === currentChat.id ? chatWithNoWebhook : session));
     }
+
+    // Clear waiting state after response is processed
+    setIsWaitingForResponse(false);
   };
 
   const setWebhookForType = (type: ChatType, url: string) => {
@@ -211,6 +219,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       chatSessions,
       activeChatType,
       webhookConfig,
+      isWaitingForResponse,
       setCurrentChat,
       createNewChat,
       sendMessage,

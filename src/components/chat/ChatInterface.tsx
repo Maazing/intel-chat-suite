@@ -4,11 +4,12 @@ import { useChat } from '@/contexts/ChatContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MessageBubble } from './MessageBubble';
+import { TypingIndicator } from './TypingIndicator';
 import { WebhookSettings } from './WebhookSettings';
 import { Send, Settings, Zap, Target, ShoppingCart, PenTool, Calendar, Sparkles, ArrowRight } from 'lucide-react';
 
 export const ChatInterface = () => {
-  const { currentChat, sendMessage, createNewChat } = useChat();
+  const { currentChat, sendMessage, createNewChat, isWaitingForResponse } = useChat();
   const [inputValue, setInputValue] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -20,7 +21,7 @@ export const ChatInterface = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [currentChat?.messages]);
+  }, [currentChat?.messages, isWaitingForResponse]);
 
   const handleSend = () => {
     if (inputValue.trim() && currentChat) {
@@ -221,6 +222,10 @@ export const ChatInterface = () => {
             <MessageBubble key={message.id} message={message} />
           ))
         )}
+        
+        {/* Show typing indicator when waiting for response */}
+        {isWaitingForResponse && <TypingIndicator />}
+        
         <div ref={messagesEndRef} />
       </div>
 
@@ -234,10 +239,11 @@ export const ChatInterface = () => {
             onKeyPress={handleKeyPress}
             placeholder={`Message ${getDisplayName(currentChat.type)} assistant...`}
             className="flex-1 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
+            disabled={isWaitingForResponse}
           />
           <Button 
             onClick={handleSend}
-            disabled={!inputValue.trim()}
+            disabled={!inputValue.trim() || isWaitingForResponse}
             className="px-3 bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Send className="w-4 h-4" />
