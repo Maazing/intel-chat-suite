@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Button } from '@/components/ui/button';
-import { Plus, MessageSquare, TrendingUp, ShoppingBag, PenTool, Calendar, MoreHorizontal, Edit, Trash2, Home, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, MessageSquare, TrendingUp, ShoppingBag, PenTool, Calendar, MoreHorizontal, Edit, Trash2, Home, ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +46,7 @@ const chatTypes = [
 export const Sidebar = () => {
   const { activeChatType, createNewChat, chatSessions, setCurrentChat, currentChat, deleteChat, renameChat, goToHomepage } = useChat();
   const [isChatTypesCollapsed, setIsChatTypesCollapsed] = useState(false);
+  const [isRecentChatsCollapsed, setIsRecentChatsCollapsed] = useState(false);
 
   const handleRenameChat = (chatId: string) => {
     const newTitle = prompt('Enter new chat name:');
@@ -62,15 +63,19 @@ export const Sidebar = () => {
 
   return (
     <div className="w-80 bg-slate-900 border-r border-slate-700 flex flex-col">
-      {/* Header */}
-      <div className="p-4 border-b border-slate-700 bg-slate-800/50">
+      {/* Enhanced Header */}
+      <div className="p-4 border-b border-slate-700 bg-gradient-to-r from-slate-800 to-slate-900">
         <Button
           variant="ghost"
-          className="w-full justify-center hover:bg-slate-700 text-white"
+          className="w-full justify-center hover:bg-slate-700/50 text-white group relative overflow-hidden transition-all duration-300 hover:scale-105"
           onClick={goToHomepage}
         >
-          <Home className="w-5 h-5 mr-2" />
-          <h1 className="text-xl font-semibold">Noa</h1>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <Home className="w-6 h-6 mr-3 text-blue-400 group-hover:text-blue-300 transition-colors" />
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            Noa
+          </h1>
+          <Sparkles className="w-4 h-4 ml-2 text-purple-400 opacity-0 group-hover:opacity-100 transition-all duration-300" />
         </Button>
       </div>
 
@@ -79,18 +84,21 @@ export const Sidebar = () => {
         <Button
           variant="ghost"
           onClick={() => setIsChatTypesCollapsed(!isChatTypesCollapsed)}
-          className="w-full justify-between text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800"
+          className="w-full justify-between text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all duration-200 group"
         >
-          <span>Chat Types</span>
+          <div className="flex items-center">
+            <MessageSquare className="w-4 h-4 mr-2 text-blue-400" />
+            <span>Chat Types</span>
+          </div>
           {isChatTypesCollapsed ? (
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           ) : (
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
           )}
         </Button>
         
         {!isChatTypesCollapsed && (
-          <div className="space-y-2">
+          <div className="space-y-2 animate-fade-in">
             {chatTypes.map((type) => {
               const Icon = type.icon;
               const isActive = activeChatType === type.id;
@@ -98,16 +106,20 @@ export const Sidebar = () => {
                 <Button
                   key={type.id}
                   variant={isActive ? "default" : "ghost"}
-                  className={`w-full justify-start text-left h-auto p-3 group ${
-                    isActive ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'hover:bg-slate-800 text-slate-300'
+                  className={`w-full justify-start text-left h-auto p-3 group transition-all duration-200 ${
+                    isActive 
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg' 
+                      : 'hover:bg-slate-800/50 text-slate-300 hover:scale-105'
                   }`}
                   onClick={() => createNewChat(type.id)}
                 >
                   <div className="flex items-start space-x-3">
-                    <Icon className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                    <Icon className={`w-5 h-5 mt-0.5 flex-shrink-0 transition-colors ${
+                      isActive ? 'text-blue-100' : 'text-blue-400 group-hover:text-blue-300'
+                    }`} />
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-sm">{type.name}</div>
-                      <div className={`text-xs ${
+                      <div className={`text-xs transition-colors ${
                         isActive ? 'text-blue-100' : 'text-slate-400 group-hover:text-slate-300'
                       }`}>
                         {type.description}
@@ -121,60 +133,97 @@ export const Sidebar = () => {
         )}
       </div>
 
-      {/* Chat History */}
+      {/* Collapsible Recent Chats */}
       <div className="flex-1 p-4 overflow-y-auto">
-        <h2 className="text-sm font-medium text-slate-400 mb-3">Recent Chats</h2>
-        <div className="space-y-1">
-          {chatSessions.map((session) => (
-            <div key={session.id} className="flex items-center group">
-              <Button
-                variant={currentChat?.id === session.id ? "default" : "ghost"}
-                className={`flex-1 justify-start text-left h-auto p-2 mr-1 ${
-                  currentChat?.id === session.id ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'hover:bg-slate-800 text-slate-300'
-                }`}
-                onClick={() => setCurrentChat(session)}
-              >
-                <div className="truncate text-sm">{session.title}</div>
-              </Button>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          onClick={() => setIsRecentChatsCollapsed(!isRecentChatsCollapsed)}
+          className="w-full justify-between text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all duration-200 group mb-3"
+        >
+          <div className="flex items-center">
+            <MessageSquare className="w-4 h-4 mr-2 text-green-400" />
+            <span>Recent Chats</span>
+            {chatSessions.length > 0 && (
+              <span className="ml-2 bg-slate-700 text-slate-300 text-xs px-2 py-1 rounded-full">
+                {chatSessions.length}
+              </span>
+            )}
+          </div>
+          {isRecentChatsCollapsed ? (
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          ) : (
+            <ChevronDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
+          )}
+        </Button>
+
+        {!isRecentChatsCollapsed && (
+          <div className="space-y-2 animate-fade-in">
+            {chatSessions.length === 0 ? (
+              <div className="text-center py-8">
+                <MessageSquare className="w-12 h-12 mx-auto text-slate-600 mb-3" />
+                <p className="text-slate-500 text-sm">No recent chats</p>
+                <p className="text-slate-600 text-xs mt-1">Start a conversation to see your chats here</p>
+              </div>
+            ) : (
+              chatSessions.map((session) => (
+                <div key={session.id} className="flex items-center group">
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700"
+                    variant={currentChat?.id === session.id ? "default" : "ghost"}
+                    className={`flex-1 justify-start text-left h-auto p-3 mr-1 transition-all duration-200 ${
+                      currentChat?.id === session.id 
+                        ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg' 
+                        : 'hover:bg-slate-800/50 text-slate-300 hover:scale-105'
+                    }`}
+                    onClick={() => setCurrentChat(session)}
                   >
-                    <MoreHorizontal className="w-4 h-4" />
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                        currentChat?.id === session.id ? 'bg-green-200' : 'bg-slate-500'
+                      }`} />
+                      <div className="truncate text-sm font-medium">{session.title}</div>
+                    </div>
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700">
-                  <DropdownMenuItem 
-                    onClick={() => handleRenameChat(session.id)}
-                    className="hover:bg-slate-700 cursor-pointer text-slate-300"
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    Rename
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => handleDeleteChat(session.id)}
-                    className="hover:bg-slate-700 cursor-pointer text-red-400 hover:text-red-300"
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ))}
-        </div>
+                  
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="opacity-0 group-hover:opacity-100 transition-all duration-200 p-2 h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700"
+                      >
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700">
+                      <DropdownMenuItem 
+                        onClick={() => handleRenameChat(session.id)}
+                        className="hover:bg-slate-700 cursor-pointer text-slate-300"
+                      >
+                        <Edit className="w-4 h-4 mr-2" />
+                        Rename
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => handleDeleteChat(session.id)}
+                        className="hover:bg-slate-700 cursor-pointer text-red-400 hover:text-red-300"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-slate-700 bg-slate-800/50">
+      {/* Enhanced Footer */}
+      <div className="p-4 border-t border-slate-700 bg-gradient-to-r from-slate-800 to-slate-900">
         <Button 
           variant="outline" 
           size="sm" 
-          className="w-full border-slate-600 hover:bg-slate-700 text-slate-300 hover:text-white"
+          className="w-full border-slate-600 hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-purple-600/20 text-slate-300 hover:text-white transition-all duration-300 hover:scale-105 hover:border-blue-500/50"
           onClick={() => createNewChat(activeChatType)}
         >
           <Plus className="w-4 h-4 mr-2" />
