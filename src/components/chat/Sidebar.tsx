@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Button } from '@/components/ui/button';
@@ -227,7 +228,7 @@ export const Sidebar = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-500/20 to-purple-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <Plus className="w-5 h-5 mr-3 text-blue-400 group-hover:text-blue-300 transition-colors group-hover:rotate-90 duration-300" />
-          <span className="relative z-10 bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent group-hover:from-blue-200 group-hover:to-purple-200 transition-all duration-300">
+          <span className="relative z-10 text-slate-200 group-hover:text-white font-semibold transition-all duration-300">
             New Chat
           </span>
           <div className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
