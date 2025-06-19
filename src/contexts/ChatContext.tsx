@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export type ChatType = 'noa-hq' | 'performance-marketing' | 'shopify-management' | 'content-creation' | 'calendar-support';
@@ -108,6 +109,14 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     // Send to webhook if configured and process the response
     if (webhookUrl) {
       try {
+        console.log('Sending to webhook:', webhookUrl);
+        console.log('Payload:', {
+          message: text,
+          chatType: currentChat.type,
+          chatId: currentChat.id,
+          timestamp: new Date().toISOString(),
+        });
+
         const response = await fetch(webhookUrl, {
           method: 'POST',
           headers: {
@@ -126,16 +135,43 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const responseData = await response.json();
+        console.log('Full n8n response:', responseData);
+        console.log('Response data type:', typeof responseData);
+        console.log('Response keys:', Object.keys(responseData));
 
-        // Create the assistant's message from the REAL webhook response
+        // Try to extract the reply from different possible response formats
+        let replyText = '';
+        
+        if (responseData.reply) {
+          replyText = responseData.reply;
+          console.log('Found reply in responseData.reply:', replyText);
+        } else if (responseData.message) {
+          replyText = responseData.message;
+          console.log('Found reply in responseData.message:', replyText);
+        } else if (responseData.response) {
+          replyText = responseData.response;
+          console.log('Found reply in responseData.response:', replyText);
+        } else if (responseData.output) {
+          replyText = responseData.output;
+          console.log('Found reply in responseData.output:', replyText);
+        } else if (typeof responseData === 'string') {
+          replyText = responseData;
+          console.log('Response is a string:', replyText);
+        } else {
+          // If none of the expected fields exist, show the full response for debugging
+          replyText = `Debug: Unexpected response format. Full response: ${JSON.stringify(responseData)}`;
+          console.log('No expected reply field found, full response:', responseData);
+        }
+
+        // Create the assistant's message from the webhook response
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
-          text: responseData.reply, // This looks for the "reply" field we set up in n8n
+          text: replyText || 'No response received from automation service',
           sender: 'assistant',
           timestamp: new Date(),
         };
 
-        // Update the UI with the assistant's real message
+        // Update the UI with the assistant's message
         const finalChat = {
           ...updatedChatWithUserMessage,
           messages: [...updatedChatWithUserMessage.messages, assistantMessage],
@@ -152,7 +188,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         // Add an error message to the chat UI if the connection fails
         const errorMessage: Message = {
             id: (Date.now() + 1).toString(),
-            text: "Sorry, I encountered an error connecting to the automation service.",
+            text: `Error: ${error.message}. Check console for details.`,
             sender: 'assistant',
             timestamp: new Date()
         };
