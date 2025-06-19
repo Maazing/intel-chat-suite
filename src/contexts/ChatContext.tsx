@@ -1,4 +1,5 @@
 
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export type ChatType = 'noa-hq' | 'performance-marketing' | 'shopify-management' | 'content-creation' | 'calendar-support';
@@ -134,9 +135,17 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
           throw new Error(`Webhook responded with status: ${response.status}`);
         }
 
-        const responseData = await response.json();
+        let responseData = await response.json();
         console.log('Full n8n response:', responseData);
         console.log('Response data type:', typeof responseData);
+        console.log('Is array:', Array.isArray(responseData));
+
+        // Handle if n8n returns an array (which is common)
+        if (Array.isArray(responseData) && responseData.length > 0) {
+          responseData = responseData[0];
+          console.log('Extracted first array element:', responseData);
+        }
+
         console.log('Response keys:', Object.keys(responseData));
 
         // Try to extract the reply from different possible response formats
@@ -267,3 +276,4 @@ export const useChat = () => {
   }
   return context;
 };
+
